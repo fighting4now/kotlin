@@ -214,7 +214,7 @@ object JsExportDeclarationChecker : DeclarationChecker {
         declarationDescriptor: DeclarationDescriptor,
         trace: BindingTrace
     ) {
-        if (!declarationDescriptor.isTopLevelInPackage()) return
+        if (!declarationDescriptor.isTopLevelInPackage() || declarationDescriptor.name.isSpecial) return
 
         val name = declarationDescriptor.getKotlinOrJsName()
 
