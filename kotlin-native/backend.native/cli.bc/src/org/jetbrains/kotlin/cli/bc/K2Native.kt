@@ -252,15 +252,18 @@ class K2Native : CLICompiler<K2NativeCompilerArguments>() {
                     "relaxed" -> MemoryModel.RELAXED
                     "strict" -> MemoryModel.STRICT
                     "experimental" -> MemoryModel.EXPERIMENTAL
+                    null -> null
                     else -> {
                         configuration.report(ERROR, "Unsupported memory model ${arguments.memoryModel}")
-                        MemoryModel.STRICT
+                        null
                     }
                 }
 
                 // TODO: revise priority and/or report conflicting values.
                 val memoryModel = get(BinaryOptions.memoryModel) ?: memoryModelFromArgument
-                put(BinaryOptions.memoryModel, memoryModel)
+                if (memoryModel != null) {
+                    put(BinaryOptions.memoryModel, memoryModel)
+                }
 
                 when {
                     arguments.generateWorkerTestRunner -> put(GENERATE_TEST_RUNNER, TestRunnerKind.WORKER)

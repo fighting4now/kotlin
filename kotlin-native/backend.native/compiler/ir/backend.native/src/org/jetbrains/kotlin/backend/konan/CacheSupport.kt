@@ -17,7 +17,8 @@ class CacheSupport(
         val configuration: CompilerConfiguration,
         resolvedLibraries: KotlinLibraryResolveResult,
         target: KonanTarget,
-        produce: CompilerOutputKind
+        memoryModel: MemoryModel,
+        produce: CompilerOutputKind,
 ) {
     private val allLibraries = resolvedLibraries.getFullList()
 
@@ -54,8 +55,8 @@ class CacheSupport(
 
         val ignoreReason = when {
             configuration.getBoolean(KonanConfigKeys.OPTIMIZATION) -> "for optimized compilation"
-            configuration.get(BinaryOptions.memoryModel) == MemoryModel.EXPERIMENTAL -> "with experimental memory model"
-            configuration.getBoolean(KonanConfigKeys.PROPERTY_LAZY_INITIALIZATION) -> "with experimental lazy top levels initialization"
+            memoryModel != MemoryModel.EXPERIMENTAL -> "with strict memory model"
+            !configuration.getBoolean(KonanConfigKeys.PROPERTY_LAZY_INITIALIZATION) -> "without experimental lazy top levels initialization"
             configuration.get(BinaryOptions.stripDebugInfoFromNativeLibs) == false -> "with native libs debug info"
             else -> null
         }

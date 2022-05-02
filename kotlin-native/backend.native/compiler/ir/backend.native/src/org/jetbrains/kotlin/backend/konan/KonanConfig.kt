@@ -61,7 +61,7 @@ class KonanConfig(val project: Project, val configuration: CompilerConfiguration
     val generateDebugTrampoline = debug && configuration.get(KonanConfigKeys.GENERATE_DEBUG_TRAMPOLINE) ?: false
 
     val memoryModel: MemoryModel by lazy {
-        when (configuration.get(BinaryOptions.memoryModel)!!) {
+        when (configuration.get(BinaryOptions.memoryModel)) {
             MemoryModel.STRICT -> MemoryModel.STRICT
             MemoryModel.RELAXED -> {
                 configuration.report(CompilerMessageSeverity.ERROR,
@@ -80,6 +80,13 @@ class KonanConfig(val project: Project, val configuration: CompilerConfiguration
                     MemoryModel.STRICT
                 } else {
                     MemoryModel.EXPERIMENTAL
+                }
+            }
+            null -> {
+                if (target.supportsThreads() && destroyRuntimeMode != DestroyRuntimeMode.LEGACY) {
+                    MemoryModel.EXPERIMENTAL
+                } else {
+                    MemoryModel.STRICT
                 }
             }
         }
@@ -177,7 +184,7 @@ class KonanConfig(val project: Project, val configuration: CompilerConfiguration
             konanKlibDir = File(distribution.klib)
     )
 
-    internal val cacheSupport = CacheSupport(configuration, resolvedLibraries, target, produce)
+    internal val cacheSupport = CacheSupport(configuration, resolvedLibraries, target, memoryModel, produce)
 
     internal val cachedLibraries: CachedLibraries
         get() = cacheSupport.cachedLibraries
