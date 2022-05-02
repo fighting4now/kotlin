@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.ir.builders
 
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
@@ -70,16 +71,23 @@ class Scope(val scopeOwnerSymbol: IrSymbol) {
         nameHint: String? = null,
         isMutable: Boolean = false,
         origin: IrDeclarationOrigin = IrDeclarationOrigin.IR_TEMPORARY_VARIABLE,
-        irType: IrType? = null,
-        startOffset: Int = irExpression.startOffset,
-        endOffset: Int = irExpression.endOffset
+        irType: IrType? = null
     ): IrVariable {
         return createTemporaryVariableDeclaration(
             irType ?: irExpression.type,
             nameHint, isMutable,
-            origin, startOffset, endOffset
+            origin, irExpression.startOffset, irExpression.endOffset
         ).apply {
             initializer = irExpression
         }
     }
+
+    // Temporary workaround for a CI build cache problem that doesn't allow to push a change that just adds new default parameters.
+    // TODO: merge with createTemporaryVariable when it's possible.
+    fun createTemporaryVariable0(irExpression: IrExpression, nameHint: String?, startOffset: Int, endOffset: Int): IrVariable =
+        createTemporaryVariableDeclaration(
+            irExpression.type, nameHint, false, IrDeclarationOrigin.IR_TEMPORARY_VARIABLE, startOffset, endOffset
+        ).apply {
+            initializer = irExpression
+        }
 }

@@ -49,7 +49,7 @@ fun Scope.declareTemporaryVariableInBlock(
     startOffset: Int = irExpression.startOffset,
     endOffset: Int = irExpression.endOffset
 ): IrVariable {
-    val temporaryVariable = createTemporaryVariable(irExpression, nameHint, startOffset = startOffset, endOffset = endOffset)
+    val temporaryVariable = createTemporaryVariable0(irExpression, nameHint, startOffset = startOffset, endOffset = endOffset)
     block.statements.add(temporaryVariable)
     return temporaryVariable
 }
